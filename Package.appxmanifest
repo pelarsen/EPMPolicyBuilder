@@ -9,7 +9,7 @@
   IgnorableNamespaces="uap rescap systemai">
 
   <Identity
-    Name="0693EA8D-9AAB-49FD-A529-03DD814F94E0"
+    Name="EPMPolicyBuilder"
     Publisher="CN=AppPublisher"
     Version="1.0.0.0" />
 

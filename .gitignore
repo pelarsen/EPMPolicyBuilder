@@ -50,6 +50,9 @@ _ReSharper*/
 *.DotSettings.user
 *.dotCover
 .idea/
+.vscode/
+*.pfx
+*.cer
 
 # Generated files
 Generated\ Files/
