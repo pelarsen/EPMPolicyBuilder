@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page x:ConnectionId='1' x:Class="EPMPolicyBuilder.Views.SettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:EPMPolicyBuilder.Views"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="20" MaxWidth="660" HorizontalAlignment="Left">
+
+            <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Connect EPM Policy Builder to your Microsoft Intune tenant."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <!-- SECTION 1: Auto-register (no Azure CLI needed) -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="20">
+                <StackPanel Spacing="14">
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE756;" FontSize="18"
+                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                        <TextBlock Text="Quick Setup — Create App Registration Automatically"
+                                   Style="{StaticResource SubtitleTextBlockStyle}" />
+                    </StackPanel>
+
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        Sign in as a <Bold>Global Admin</Bold> (or Application Administrator) and
+                        the app will automatically register itself in your Azure AD tenant and
+                        grant the required Intune permissions. No Azure CLI or PowerShell needed.
+                    </TextBlock>
+
+                    <!-- Not-yet-started state -->
+                    <Button x:ConnectionId='6' x:Name="CreateAppBtn"
+                            Content="Sign In and Create App Registration"
+                            Style="{StaticResource AccentButtonStyle}"
+                                                                                     
+                                                                                                                  
+                                                                                                                  />
+
+                    <!-- Progress log (shown while running OR after error) -->
+                    <StackPanel x:ConnectionId='7' Spacing="8"
+                                                                                                                    >
+                        <ProgressBar IsIndeterminate="True" />
+                        <ListView x:ConnectionId='21' x:Name="SetupLogList"
+                                                                           
+                                  SelectionMode="None"
+                                  MinHeight="100"
+                                  Background="{ThemeResource SystemFillColorSolidNeutralBackgroundBrush}"
+                                  CornerRadius="{StaticResource ControlCornerRadius}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate                      >
+                                    <TextBlock x:ConnectionId='23'                 FontFamily="Consolas" FontSize="12"
+                                               TextWrapping="Wrap" Padding="4,2" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+
+                    <!-- Error state: show log + error banner + retry button -->
+                    <StackPanel x:ConnectionId='8' Spacing="8"
+                                                                                                                   >
+                        <ListView x:ConnectionId='16'                                          
+                                  SelectionMode="None"
+                                  MaxHeight="160"
+                                  Background="{ThemeResource SystemFillColorSolidNeutralBackgroundBrush}"
+                                  CornerRadius="{StaticResource ControlCornerRadius}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate                      >
+                                    <TextBlock x:ConnectionId='20'                 FontFamily="Consolas" FontSize="12"
+                                               TextWrapping="Wrap" Padding="4,2" />
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <InfoBar x:ConnectionId='17' IsOpen="True" IsClosable="False" Severity="Error"
+                                 Title="Setup failed"
+                                                                                             />
+                        <Button x:ConnectionId='18' Content="Try Again"
+                                                                                         
+                                                                                                                       />
+                    </StackPanel>
+
+                    <!-- Completed state -->
+                    <StackPanel x:ConnectionId='9' Spacing="10"
+                                                                                                                     >
+
+                        <InfoBar IsOpen="True" IsClosable="False" Severity="Success"
+                                 Title="App Registration Created"
+                                 Message="The settings below have been saved automatically. Go to Intune Connection to sign in." />
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="New Client ID" Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBox x:ConnectionId='14' x:Name="NewClientIdBox"
+                                                                                           
+                                         IsReadOnly="True" FontFamily="Consolas" MinWidth="330" />
+                                <Button x:ConnectionId='15' Content="Copy"                               />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Setup Log" Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <ListView x:ConnectionId='11'                                          
+                                      SelectionMode="None"
+                                      MaxHeight="200"
+                                      Background="{ThemeResource SystemFillColorSolidNeutralBackgroundBrush}"
+                                      CornerRadius="{StaticResource ControlCornerRadius}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate                      >
+                                        <TextBlock x:ConnectionId='13'                 FontFamily="Consolas" FontSize="12"
+                                                   TextWrapping="Wrap" Padding="4,2" />
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+
+                        <Button x:ConnectionId='10' Content="Go to Intune Connection ?"
+                                Style="{StaticResource AccentButtonStyle}"
+                                                                   />
+                    </StackPanel>
+
+                </StackPanel>
+            </Border>
+
+            <!-- SECTION 2: Manual configuration -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="20">
+                <StackPanel Spacing="14">
+
+                    <TextBlock Text="Manual Configuration"
+                               Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <TextBlock TextWrapping="Wrap"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        Already have an App Registration? Paste your Client ID here.
+                        The app needs the <Bold>DeviceManagementConfiguration.ReadWrite.All</Bold>
+                        delegated permission and a public-client redirect URI of
+                        <Bold>https://login.microsoftonline.com/common/oauth2/nativeclient</Bold>.
+                    </TextBlock>
+
+                    <TextBox x:ConnectionId='2' x:Name="ClientIdBox"
+                             AutomationProperties.AutomationId="ClientIdTextBox"
+                             Header="Application (Client) ID *"
+                             PlaceholderText="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                                                                                                                  />
+
+                    <TextBox x:ConnectionId='3' x:Name="TenantIdBox"
+                             AutomationProperties.AutomationId="TenantIdTextBox"
+                             Header="Directory (Tenant) ID  (leave blank or 'common' for any tenant)"
+                             PlaceholderText="common"
+                                                                                                                  />
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <Button x:ConnectionId='4' x:Name="SaveButton"
+                                AutomationProperties.AutomationId="SaveSettingsButton"
+                                Content="Save Settings"
+                                Style="{StaticResource AccentButtonStyle}"
+                                                                         />
+                        <StackPanel x:ConnectionId='5' Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+                                                                                                                 >
+                            <FontIcon Glyph="&#xE73E;" Foreground="{ThemeResource SystemFillColorSuccessBrush}" FontSize="14" />
+                            <TextBlock Text="Saved" Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <HyperlinkButton Content="How to create an App Registration in Azure Portal ?"
+                                     NavigateUri="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/CreateApplicationBlade" />
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
+

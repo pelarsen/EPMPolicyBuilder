@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "dgSpecHash": "LXr89fnSB/w=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\PerLarsen\\EPMPolicyBuilder\\EPMPolicyBuilder.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.2\\communitytoolkit.mvvm.8.4.2.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.identity.client\\4.84.0\\microsoft.identity.client.4.84.0.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.identitymodel.abstractions\\8.14.0\\microsoft.identitymodel.abstractions.8.14.0.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.web.webview2\\1.0.3719.77\\microsoft.web.webview2.1.0.3719.77.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windows.ai.machinelearning\\2.0.300\\microsoft.windows.ai.machinelearning.2.0.300.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.28000.1839\\microsoft.windows.sdk.buildtools.10.0.28000.1839.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windows.sdk.buildtools.msix\\1.7.251221100\\microsoft.windows.sdk.buildtools.msix.1.7.251221100.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windows.sdk.buildtools.winapp\\0.3.1\\microsoft.windows.sdk.buildtools.winapp.0.3.1.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk\\2.0.1\\microsoft.windowsappsdk.2.0.1.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.ai\\2.0.185\\microsoft.windowsappsdk.ai.2.0.185.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.base\\2.0.3\\microsoft.windowsappsdk.base.2.0.3.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.dwrite\\2.0.26041403\\microsoft.windowsappsdk.dwrite.2.0.26041403.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.foundation\\2.0.20\\microsoft.windowsappsdk.foundation.2.0.20.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.interactiveexperiences\\2.0.12\\microsoft.windowsappsdk.interactiveexperiences.2.0.12.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.ml\\2.0.300\\microsoft.windowsappsdk.ml.2.0.300.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.runtime\\2.0.1\\microsoft.windowsappsdk.runtime.2.0.1.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.widgets\\2.0.4\\microsoft.windowsappsdk.widgets.2.0.4.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windowsappsdk.winui\\2.0.12\\microsoft.windowsappsdk.winui.2.0.12.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\system.net.http.json\\10.0.8\\system.net.http.json.10.0.8.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\system.numerics.tensors\\9.0.0\\system.numerics.tensors.9.0.0.nupkg.sha512",
+    "C:\\Users\\PerLarsen\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.26100.57\\microsoft.windows.sdk.net.ref.10.0.26100.57.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference System.Net.Http.Json will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "C:\\Users\\PerLarsen\\EPMPolicyBuilder\\EPMPolicyBuilder.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\PerLarsen\\EPMPolicyBuilder\\EPMPolicyBuilder.csproj",
+      "libraryId": "System.Net.Http.Json",
+      "targetGraphs": [
+        "net10.0-windows10.0.26100"
+      ]
+    }
+  ]
+}

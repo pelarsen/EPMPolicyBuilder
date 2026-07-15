@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page x:ConnectionId='1' x:Class="EPMPolicyBuilder.Views.RuleBuilderPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:EPMPolicyBuilder.Views"
+      xmlns:models="using:EPMPolicyBuilder.Models"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16" MaxWidth="860" HorizontalAlignment="Left">
+
+            <TextBlock Text="Rule Builder" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Configure the elevation rule parameters."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <!-- File association info -->
+            <InfoBar x:ConnectionId='2' x:Name="FileInfoBar"
+                     AutomationProperties.AutomationId="FileAssociationInfoBar"
+                                                                                                             
+                     IsClosable="False"
+                     Severity="Informational"
+                     Title="File Associated"
+                                                                                                                   />
+
+            <!-- Rule identity card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Rule Identity" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBox x:ConnectionId='18' x:Name="RuleNameBox"
+                             AutomationProperties.AutomationId="RuleNameTextBox"
+                             Header="Rule Name"
+                             PlaceholderText="e.g., Allow MyApp.exe elevation"
+                                                                                                                  />
+                    <TextBox x:ConnectionId='19' x:Name="RuleDescriptionBox"
+                             AutomationProperties.AutomationId="RuleDescriptionTextBox"
+                             Header="Description"
+                             PlaceholderText="Optional description..."
+                                                                                                                        
+                             AcceptsReturn="True"
+                             Height="80" />
+                </StackPanel>
+            </Border>
+
+            <!-- Elevation settings card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Elevation Settings" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <ComboBox x:ConnectionId='13' x:Name="ElevationTypeComboBox"
+                              AutomationProperties.AutomationId="ElevationTypeComboBox"
+                              Header="Elevation Type"
+                                                                             
+                                                                                                
+                              HorizontalAlignment="Stretch" />
+
+                    <StackPanel x:ConnectionId='14' Spacing="8"
+                                                                                                                                          >
+                        <TextBlock Text="Validation Options" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <CheckBox x:ConnectionId='16' x:Name="BusinessJustificationCheckBox"
+                                  AutomationProperties.AutomationId="BusinessJustificationCheckBox"
+                                  Content="Business Justification"
+                                                                                                              />
+                        <CheckBox x:ConnectionId='17' x:Name="WindowsAuthCheckBox"
+                                  AutomationProperties.AutomationId="WindowsAuthCheckBox"
+                                  Content="Windows Authentication"
+                                                                                                              />
+                    </StackPanel>
+
+                    <ComboBox x:ConnectionId='15' x:Name="ChildProcessComboBox"
+                              AutomationProperties.AutomationId="ChildProcessBehaviorComboBox"
+                              Header="Child Process Behavior"
+                                                                                    
+                                                                                                       
+                              HorizontalAlignment="Stretch" />
+                </StackPanel>
+            </Border>
+
+            <!-- Signature / Certificate card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Certificate / Signature" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <ComboBox x:ConnectionId='4' x:Name="SignatureSourceComboBox"
+                              AutomationProperties.AutomationId="SignatureSourceComboBox"
+                              Header="Signature Source"
+                                                                               
+                                                                                                  
+                              HorizontalAlignment="Stretch" />
+
+                    <!-- Auto-detected certificate banner -->
+                    <Border x:ConnectionId='5' Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                            BorderBrush="{ThemeResource SystemFillColorSuccessBrush}"
+                            BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                            Padding="12 10"
+                                                                                                                                >
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <FontIcon Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                                      Glyph="&#xE8D4;" FontSize="20"
+                                      Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                      VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="Certificate detected from file"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" />
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Signed by:" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                <TextBlock x:ConnectionId='12'                                                           
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text="Thumbprint:" />
+                                <TextBlock x:ConnectionId='10'                                                              
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           FontFamily="Consolas"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text=" · Valid to:" />
+                                <TextBlock x:ConnectionId='11'                                                            />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ComboBox x:ConnectionId='6' x:Name="ReusableCertComboBox"
+                              AutomationProperties.AutomationId="ReusableCertComboBox"
+                              Header="Select Reusable Certificate"
+                                                                                   
+                                                                                                 
+                              DisplayMemberPath="DisplayName"
+                              HorizontalAlignment="Stretch"
+                                                                                                                                            />
+
+                    <StackPanel x:ConnectionId='7' Spacing="8"
+                                                                                                                                         >
+                        <TextBox x:ConnectionId='8' x:Name="CertPathBox"
+                                 AutomationProperties.AutomationId="CertPathTextBox"
+                                 Header="Certificate File"
+                                                                                        
+                                 IsReadOnly="True"
+                                 PlaceholderText="Select a .cer or .pfx file..." />
+                        <Button x:ConnectionId='9' x:Name="BrowseCertButton"
+                                AutomationProperties.AutomationId="BrowseCertButton"
+                                Content="Browse Certificate..."
+                                                               />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Button x:ConnectionId='3' x:Name="BuildRuleButton"
+                    AutomationProperties.AutomationId="BuildRuleButton"
+                    Content="Build Rule &amp; Go to Policy Upload &#x2192;"
+                    Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Right"
+                                                  />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
+

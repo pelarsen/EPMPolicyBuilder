@@ -1,0 +1,1 @@
+C:\Users\PerLarsen\EPMPolicyBuilder\EPMPolicyBuilder.csproj;arm64

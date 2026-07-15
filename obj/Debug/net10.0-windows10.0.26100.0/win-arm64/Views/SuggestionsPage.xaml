@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page x:ConnectionId='1' x:Class="EPMPolicyBuilder.Views.SuggestionsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:EPMPolicyBuilder.Views"
+      xmlns:models="using:EPMPolicyBuilder.Models"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16" MaxWidth="1000" HorizontalAlignment="Left">
+
+            <!-- â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <TextBlock Text="Rule Suggestions" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap">
+                Applications that users ran with elevated privileges without an EPM rule
+                in the last 30 days â€” top candidates for new policies.
+            </TextBlock>
+
+            <!-- â”€â”€ Not connected card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <Border x:ConnectionId='2' Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="20"
+                                                                                                                          >
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="14">
+                        <FontIcon Glyph="&#xEA8A;" FontSize="32"
+                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                  VerticalAlignment="Center" />
+                        <StackPanel VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Connect to Microsoft Intune"
+                                       Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="Sign in to load the unmanaged elevations report."
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- â”€â”€ Toolbar (refresh) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <StackPanel x:ConnectionId='3' Orientation="Horizontal" Spacing="8"
+                                                                                                                        >
+                <Button x:ConnectionId='16' Content="Refresh Report"
+                        Style="{StaticResource AccentButtonStyle}"
+                                                                           
+                                                                                                                />
+                <ProgressBar x:ConnectionId='17' IsIndeterminate="True"
+                             Width="200"
+                             VerticalAlignment="Center"
+                                                                                                                            />
+            </StackPanel>
+
+            <!-- â”€â”€ Status InfoBar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <InfoBar x:ConnectionId='4'                                                                                        
+                                                                                                              
+                                                                            
+                     IsClosable="True" />
+
+            <!-- â”€â”€ Results card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <Border x:ConnectionId='5' Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                                                                                                                    >
+                <StackPanel Spacing="12">
+
+                    <!-- Column headers -->
+                    <Grid Padding="12,4" ColumnSpacing="8"
+                          Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                          CornerRadius="{StaticResource ControlCornerRadius}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="150" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Application"
+                                   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="1" Text="Publisher"
+                                   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="2" Text="Version"
+                                   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="3" Text="Elevations (30d)"
+                                   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold" />
+                        <TextBlock Grid.Column="4" Text=""
+                                   Style="{StaticResource CaptionTextBlockStyle}" FontWeight="SemiBold" />
+                    </Grid>
+
+                    <!-- Results -->
+                    <ListView x:ConnectionId='6' x:Name="SuggestionsList"
+                                                                          
+                              SelectionMode="None"
+                              MaxHeight="600">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="4,2" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+                        <ListView.ItemTemplate>
+                            <DataTemplate                                        >
+                                <Grid x:ConnectionId='9' Padding="8,6" ColumnSpacing="8"
+                                      Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                      CornerRadius="{StaticResource ControlCornerRadius}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="150" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- App name + filename -->
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock x:ConnectionId='14'                            
+                                                   Style="{StaticResource BodyStrongTextBlockStyle}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                                                                 />
+                                        <TextBlock x:ConnectionId='15'                         
+                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                                                              />
+                                    </StackPanel>
+
+                                    <!-- Publisher -->
+                                    <TextBlock x:ConnectionId='10' Grid.Column="1"
+                                                                        
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                                                           />
+
+                                    <!-- Version -->
+                                    <TextBlock x:ConnectionId='11' Grid.Column="2"
+                                                                          
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+                                    <!-- Count badge -->
+                                    <Border Grid.Column="3"
+                                            Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                            BorderBrush="{ThemeResource SystemFillColorCriticalBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="10,3"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center">
+                                        <TextBlock x:ConnectionId='13'                           
+                                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                                   Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                   FontWeight="SemiBold" />
+                                    </Border>
+
+                                    <!-- Create Rule button -->
+                                    <Button x:ConnectionId='12' Grid.Column="4"
+                                            Content="Create Rule â†’"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            VerticalAlignment="Center"
+                                                                          
+                                                           />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <!-- Empty state -->
+                    <TextBlock x:ConnectionId='7' Text="No suggestions yet â€” click Refresh Report to load data from Intune."
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               HorizontalAlignment="Center"
+                               Padding="0,24"
+                                                                                                                                                            />
+
+                </StackPanel>
+            </Border>
+
+            <!-- â”€â”€ Info callout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+            <InfoBar IsOpen="True" IsClosable="False" Severity="Informational"
+                     Title="Data from Intune"
+                     Message="The report is updated once every 24 hours and covers the last 30 days. Only applications elevated without an EPM rule are shown." />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
+

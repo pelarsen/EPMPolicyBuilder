@@ -1,0 +1,9 @@
+App.xbf
+MainWindow.xbf
+Views\FileAnalysisPage.xbf
+Views\IntuneConnectionPage.xbf
+Views\PolicyUploadPage.xbf
+Views\RuleBuilderPage.xbf
+Views\ScannerPage.xbf
+Views\SettingsPage.xbf
+Views\SuggestionsPage.xbf
