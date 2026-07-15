@@ -51,6 +51,7 @@ _ReSharper*/
 *.dotCover
 .idea/
 .vscode/
+node_modules/
 *.pfx
 *.cer
 
