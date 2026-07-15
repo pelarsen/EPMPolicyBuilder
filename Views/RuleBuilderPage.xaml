@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="EPMPolicyBuilder.Views.RuleBuilderPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:EPMPolicyBuilder.Views"
+      xmlns:models="using:EPMPolicyBuilder.Models"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16" MaxWidth="860" HorizontalAlignment="Left">
+
+            <TextBlock Text="Rule Builder" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Configure the elevation rule parameters."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <!-- File association info -->
+            <InfoBar x:Name="FileInfoBar"
+                     AutomationProperties.AutomationId="FileAssociationInfoBar"
+                     IsOpen="{x:Bind local:RuleBuilderPage.HasMetadata(ViewModel.FileMetadata), Mode=OneWay}"
+                     IsClosable="False"
+                     Severity="Informational"
+                     Title="File Associated"
+                     Message="{x:Bind local:RuleBuilderPage.FileInfoMessage(ViewModel.FileMetadata), Mode=OneWay}" />
+
+            <!-- Rule identity card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Rule Identity" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBox x:Name="RuleNameBox"
+                             AutomationProperties.AutomationId="RuleNameTextBox"
+                             Header="Rule Name"
+                             PlaceholderText="e.g., Allow MyApp.exe elevation"
+                             Text="{x:Bind ViewModel.RuleName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox x:Name="RuleDescriptionBox"
+                             AutomationProperties.AutomationId="RuleDescriptionTextBox"
+                             Header="Description"
+                             PlaceholderText="Optional description..."
+                             Text="{x:Bind ViewModel.RuleDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             Height="80" />
+                </StackPanel>
+            </Border>
+
+            <!-- Elevation settings card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Elevation Settings" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <ComboBox x:Name="ElevationTypeComboBox"
+                              AutomationProperties.AutomationId="ElevationTypeComboBox"
+                              Header="Elevation Type"
+                              ItemsSource="{x:Bind ViewModel.ElevationTypes}"
+                              SelectedIndex="{x:Bind ViewModel.ElevationTypeIndex, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" />
+
+                    <StackPanel Spacing="8"
+                                Visibility="{x:Bind local:RuleBuilderPage.BoolToVisibility(ViewModel.ShowValidationOptions), Mode=OneWay}">
+                        <TextBlock Text="Validation Options" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <CheckBox x:Name="BusinessJustificationCheckBox"
+                                  AutomationProperties.AutomationId="BusinessJustificationCheckBox"
+                                  Content="Business Justification"
+                                  IsChecked="{x:Bind ViewModel.ValidationBusinessJustification, Mode=TwoWay}" />
+                        <CheckBox x:Name="WindowsAuthCheckBox"
+                                  AutomationProperties.AutomationId="WindowsAuthCheckBox"
+                                  Content="Windows Authentication"
+                                  IsChecked="{x:Bind ViewModel.ValidationWindowsAuthentication, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <ComboBox x:Name="ChildProcessComboBox"
+                              AutomationProperties.AutomationId="ChildProcessBehaviorComboBox"
+                              Header="Child Process Behavior"
+                              ItemsSource="{x:Bind ViewModel.ChildProcessBehaviors}"
+                              SelectedIndex="{x:Bind ViewModel.ChildProcessBehaviorIndex, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" />
+                </StackPanel>
+            </Border>
+
+            <!-- Signature / Certificate card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Certificate / Signature" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <ComboBox x:Name="SignatureSourceComboBox"
+                              AutomationProperties.AutomationId="SignatureSourceComboBox"
+                              Header="Signature Source"
+                              ItemsSource="{x:Bind ViewModel.SignatureSources}"
+                              SelectedIndex="{x:Bind ViewModel.SignatureSourceIndex, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" />
+
+                    <!-- Auto-detected certificate banner -->
+                    <Border Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                            BorderBrush="{ThemeResource SystemFillColorSuccessBrush}"
+                            BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                            Padding="12 10"
+                            Visibility="{x:Bind local:RuleBuilderPage.BoolToVisibility(ViewModel.HasDetectedCert), Mode=OneWay}">
+                        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="8" RowSpacing="4">
+                            <FontIcon Grid.Row="0" Grid.Column="0" Grid.RowSpan="3"
+                                      Glyph="&#xE8D4;" FontSize="20"
+                                      Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                      VerticalAlignment="Center" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="Certificate detected from file"
+                                       Style="{StaticResource BodyStrongTextBlockStyle}" />
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="Signed by:" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Text="{x:Bind ViewModel.DetectedCertSubject, Mode=OneWay}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text="Thumbprint:" />
+                                <TextBlock Text="{x:Bind ViewModel.DetectedCertThumbprint, Mode=OneWay}"
+                                           Style="{StaticResource CaptionTextBlockStyle}"
+                                           FontFamily="Consolas"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text=" · Valid to:" />
+                                <TextBlock Text="{x:Bind ViewModel.DetectedCertValidTo, Mode=OneWay}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ComboBox x:Name="ReusableCertComboBox"
+                              AutomationProperties.AutomationId="ReusableCertComboBox"
+                              Header="Select Reusable Certificate"
+                              ItemsSource="{x:Bind ViewModel.ReusableCertificates}"
+                              SelectedItem="{x:Bind ViewModel.SelectedReusableCert, Mode=TwoWay}"
+                              DisplayMemberPath="DisplayName"
+                              HorizontalAlignment="Stretch"
+                              Visibility="{x:Bind local:RuleBuilderPage.BoolToVisibility(ViewModel.ShowReusableCertComboBox), Mode=OneWay}" />
+
+                    <StackPanel Spacing="8"
+                                Visibility="{x:Bind local:RuleBuilderPage.BoolToVisibility(ViewModel.ShowUploadCertButton), Mode=OneWay}">
+                        <TextBox x:Name="CertPathBox"
+                                 AutomationProperties.AutomationId="CertPathTextBox"
+                                 Header="Certificate File"
+                                 Text="{x:Bind ViewModel.UploadedCertPath, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 PlaceholderText="Select a .cer or .pfx file..." />
+                        <Button x:Name="BrowseCertButton"
+                                AutomationProperties.AutomationId="BrowseCertButton"
+                                Content="Browse Certificate..."
+                                Click="BrowseCertButton_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Button x:Name="BuildRuleButton"
+                    AutomationProperties.AutomationId="BuildRuleButton"
+                    Content="Build Rule &amp; Go to Policy Upload &#x2192;"
+                    Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Right"
+                    Click="BuildRuleButton_Click" />
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

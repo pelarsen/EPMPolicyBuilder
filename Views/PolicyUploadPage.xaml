@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="EPMPolicyBuilder.Views.PolicyUploadPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:EPMPolicyBuilder.Views"
+      xmlns:models="using:EPMPolicyBuilder.Models"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16" MaxWidth="860" HorizontalAlignment="Left">
+
+            <TextBlock Text="Policy Upload" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="Review the generated rule JSON and upload it to Microsoft Intune."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <!-- Not connected â€” inline connect card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="20"
+                    Visibility="{x:Bind local:PolicyUploadPage.InvertBoolToVisibility(ViewModel.IsConnected), Mode=OneWay}">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="14">
+                        <FontIcon Glyph="&#xEA8A;" FontSize="32"
+                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                  VerticalAlignment="Center" />
+                        <StackPanel VerticalAlignment="Center" Spacing="2">
+                            <TextBlock Text="Connect to Microsoft Intune"
+                                       Style="{StaticResource SubtitleTextBlockStyle}" />
+                            <TextBlock Text="Sign in to load EPM policies and upload elevation rules."
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <ProgressBar IsIndeterminate="True"
+                                 Visibility="{x:Bind local:PolicyUploadPage.BoolToVisibility(ViewModel.IsConnecting), Mode=OneWay}" />
+
+                    <!-- Show connection errors (e.g. AADSTS50011) inline -->
+                    <InfoBar IsOpen="{x:Bind local:PolicyUploadPage.HasStatus(ViewModel.ConnectionStatusMessage), Mode=OneWay}"
+                             IsClosable="False"
+                             Severity="Error"
+                             Message="{x:Bind ViewModel.ConnectionStatusMessage, Mode=OneWay}" />
+
+                    <Button Content="Connect to Intune"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Command="{x:Bind ViewModel.ConnectCommand}"
+                            IsEnabled="{x:Bind local:PolicyUploadPage.InvertBool(ViewModel.IsConnecting), Mode=OneWay}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Batch upload banner -->
+            <InfoBar x:Name="BatchModeInfoBar"
+                     AutomationProperties.AutomationId="BatchModeInfoBar"
+                     IsOpen="{x:Bind ViewModel.IsBatchMode, Mode=OneWay}"
+                     IsClosable="False"
+                     Severity="Informational"
+                     Title="Batch Upload Mode"
+                     Message="{x:Bind ViewModel.BatchSummary, Mode=OneWay}" />
+
+            <!-- No rule warning -->
+            <InfoBar x:Name="NoRuleInfoBar"
+                     AutomationProperties.AutomationId="NoRuleInfoBar"
+                     IsOpen="{x:Bind local:PolicyUploadPage.InvertBool(ViewModel.HasRule), Mode=OneWay}"
+                     IsClosable="False"
+                     Severity="Informational"
+                     Title="No Rule Configured"
+                     Message="Build a rule in the Rule Builder page first, then return here to upload it." />
+
+            <!-- Rule JSON preview -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Visibility="{x:Bind local:PolicyUploadPage.BoolToVisibility(ViewModel.HasRule), Mode=OneWay}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Rule JSON Preview" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <ScrollViewer MaxHeight="320" HorizontalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="RuleJsonPreview"
+                                   Text="{x:Bind ViewModel.RuleJson, Mode=OneWay}"
+                                   FontFamily="Consolas"
+                                   TextWrapping="Wrap" />
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!-- Policy target card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Visibility="{x:Bind local:PolicyUploadPage.BoolToVisibility(ViewModel.IsConnected), Mode=OneWay}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Target Policy" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+                    <RadioButtons x:Name="PolicyTargetRadio" SelectionChanged="PolicyTargetRadio_SelectionChanged">
+                        <RadioButton x:Name="ExistingPolicyRadio"
+                                     AutomationProperties.AutomationId="ExistingPolicyRadio"
+                                     Content="Add to Existing Policy" IsChecked="True" />
+                        <RadioButton x:Name="NewPolicyRadio"
+                                     AutomationProperties.AutomationId="NewPolicyRadio"
+                                     Content="Create New Policy" />
+                    </RadioButtons>
+
+                    <!-- Existing policy selector -->
+                    <StackPanel Spacing="8"
+                                Visibility="{x:Bind local:PolicyUploadPage.InvertBoolToVisibility(ViewModel.CreateNewPolicy), Mode=OneWay}">
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="PolicyComboBox"
+                                      AutomationProperties.AutomationId="ExistingPoliciesComboBox"
+                                      Grid.Column="0"
+                                      Header="Select EPM Policy"
+                                      ItemsSource="{x:Bind ViewModel.Policies}"
+                                      SelectedItem="{x:Bind ViewModel.SelectedPolicy, Mode=TwoWay}"
+                                      DisplayMemberPath="Name"
+                                      HorizontalAlignment="Stretch" />
+                            <Button x:Name="LoadPoliciesButton"
+                                    AutomationProperties.AutomationId="LoadPoliciesButton"
+                                    Grid.Column="1"
+                                    Content="Refresh"
+                                    VerticalAlignment="Bottom"
+                                    Command="{x:Bind ViewModel.LoadPoliciesCommand}" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- New policy name -->
+                    <TextBox x:Name="NewPolicyNameBox"
+                             AutomationProperties.AutomationId="NewPolicyNameTextBox"
+                             Header="New Policy Name"
+                             PlaceholderText="e.g., EPM Elevation Rules - Finance"
+                             Text="{x:Bind ViewModel.NewPolicyName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Visibility="{x:Bind local:PolicyUploadPage.BoolToVisibility(ViewModel.CreateNewPolicy), Mode=OneWay}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Upload button + status -->
+            <Button x:Name="UploadButton"
+                    AutomationProperties.AutomationId="UploadRuleButton"
+                    Content="Upload Rule to Intune"
+                    Style="{StaticResource AccentButtonStyle}"
+                    HorizontalAlignment="Right"
+                    IsEnabled="{x:Bind local:PolicyUploadPage.CanUpload(ViewModel.IsConnected, ViewModel.HasRule, ViewModel.IsLoading), Mode=OneWay}"
+                    Command="{x:Bind ViewModel.UploadCommand}" />
+
+            <ProgressBar x:Name="UploadProgressBar"
+                         IsIndeterminate="True"
+                         Visibility="{x:Bind local:PolicyUploadPage.BoolToVisibility(ViewModel.IsLoading), Mode=OneWay}" />
+
+            <InfoBar x:Name="UploadStatusInfoBar"
+                     AutomationProperties.AutomationId="UploadStatusInfoBar"
+                     IsOpen="{x:Bind local:PolicyUploadPage.HasStatus(ViewModel.StatusMessage), Mode=OneWay}"
+                     Severity="{x:Bind local:PolicyUploadPage.UploadSeverity(ViewModel.HasError, ViewModel.HasSuccess), Mode=OneWay}"
+                     Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                     IsClosable="True" />
+
+            <!-- Actual request JSON sent to Graph â€” only shown on upload errors -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource SystemFillColorCriticalBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Visibility="{x:Bind local:PolicyUploadPage.BoolToVisibility(ViewModel.HasErrorJson), Mode=OneWay}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Request JSON sent to Graph API"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                    <ScrollViewer MaxHeight="320" HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+                        <TextBlock Text="{x:Bind ViewModel.ErrorRequestJson, Mode=OneWay}"
+                                   FontFamily="Consolas"
+                                   FontSize="11"
+                                   TextWrapping="Wrap" />
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page x:Class="EPMPolicyBuilder.Views.IntuneConnectionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:EPMPolicyBuilder.Views"
+      xmlns:models="using:EPMPolicyBuilder.Models"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16" MaxWidth="860" HorizontalAlignment="Left">
+
+            <TextBlock Text="Certificates" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Text="View and manage reusable certificate settings for EPM elevation rules."
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <!-- Redirect URI fix banner -->
+            <InfoBar x:Name="RedirectUriInfoBar"
+                     IsOpen="{x:Bind ViewModel.HasRedirectUriError, Mode=OneWay}"
+                     IsClosable="False"
+                     Severity="Warning"
+                     Title="Redirect URI not registered (AADSTS50011)"
+                     Visibility="{x:Bind local:IntuneConnectionPage.BoolToVisibility(ViewModel.HasRedirectUriError), Mode=OneWay}">
+                <InfoBar.Content>
+                    <StackPanel Spacing="8" Margin="0,8,0,4">
+                        <TextBlock TextWrapping="Wrap">
+                            The app registration is missing <Bold>http://localhost</Bold> as a redirect URI.
+                            Click below to fix it automatically (requires signing in as Global Admin again).
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="Fix Redirect URI Automatically"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Command="{x:Bind ViewModel.FixRedirectUriCommand}"
+                                    IsEnabled="{x:Bind local:IntuneConnectionPage.NotBusy(ViewModel.IsFixingRedirectUri), Mode=OneWay}" />
+                            <HyperlinkButton Content="Fix manually in Azure Portal â†’"
+                                             NavigateUri="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" />
+                        </StackPanel>
+                        <ProgressBar IsIndeterminate="True"
+                                     Visibility="{x:Bind local:IntuneConnectionPage.BoolToVisibility(ViewModel.IsFixingRedirectUri), Mode=OneWay}" />
+                    </StackPanel>
+                </InfoBar.Content>
+            </InfoBar>
+
+            <!-- No client ID warning â€“ with wizard shortcut -->
+            <InfoBar x:Name="NoClientIdInfoBar"
+                     AutomationProperties.AutomationId="NoClientIdInfoBar"
+                     IsOpen="{x:Bind local:IntuneConnectionPage.InvertBool(ViewModel.HasClientId), Mode=OneWay}"
+                     IsClosable="False"
+                     Severity="Warning"
+                     Title="Azure AD App Not Configured">
+                <InfoBar.Content>
+                    <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,8,0,4">
+                        <TextBlock Text="No App Registration is saved yet."
+                                   VerticalAlignment="Center" />
+                        <Button Content="Go to Settings â†’"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Click="SetupWizardButton_Click" />
+                    </StackPanel>
+                </InfoBar.Content>
+            </InfoBar>
+
+            <!-- Status InfoBar -->
+            <InfoBar x:Name="StatusInfoBar"
+                     AutomationProperties.AutomationId="ConnectionStatusInfoBar"
+                     IsOpen="{x:Bind local:IntuneConnectionPage.HasStatus(ViewModel.StatusMessage), Mode=OneWay}"
+                     Severity="{x:Bind local:IntuneConnectionPage.StatusSeverity(ViewModel.HasError), Mode=OneWay}"
+                     Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                     IsClosable="True" />
+
+            <!-- Reusable settings card -->
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="{StaticResource ControlCornerRadius}"
+                    Padding="16"
+                    Visibility="{x:Bind local:IntuneConnectionPage.BoolToVisibility(ViewModel.IsConnected), Mode=OneWay}">
+                <StackPanel Spacing="12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Reusable Certificate Settings" Style="{StaticResource SubtitleTextBlockStyle}" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <Button x:Name="RefreshCertsButton"
+                                    AutomationProperties.AutomationId="RefreshCertsButton"
+                                    Content="Refresh"
+                                    Command="{x:Bind ViewModel.LoadReusableSettingsCommand}" />
+                            <Button x:Name="UploadCertButton"
+                                    AutomationProperties.AutomationId="UploadCertButton"
+                                    Content="Upload New Certificate"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    Click="UploadCertButton_Click" />
+                        </StackPanel>
+                    </Grid>
+
+                    <ListView x:Name="ReusableSettingsList"
+                              AutomationProperties.AutomationId="ReusableSettingsList"
+                              ItemsSource="{x:Bind ViewModel.ReusableSettings}"
+                              SelectionMode="None"
+                              MinHeight="80">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="models:ReusableSetting">
+                                <Border Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1" CornerRadius="4"
+                                        Padding="16,12" Margin="0,4">
+                                    <Grid ColumnSpacing="16">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Certificate icon -->
+                                        <Border Grid.Column="0"
+                                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                CornerRadius="6" Width="40" Height="40"
+                                                VerticalAlignment="Top">
+                                            <FontIcon Glyph="&#xE8C5;" FontSize="20" Foreground="White"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                        </Border>
+
+                                        <!-- Main content -->
+                                        <StackPanel Grid.Column="1" Spacing="6">
+                                            <!-- Name + description -->
+                                            <TextBlock Text="{x:Bind DisplayName}"
+                                                       Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                            <TextBlock Text="{x:Bind Description}"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       Visibility="{x:Bind local:IntuneConnectionPage.StringToVisibility(Description)}" />
+
+                                            <!-- X.509 details grid -->
+                                            <Grid ColumnSpacing="24" RowSpacing="4"
+                                                  Visibility="{x:Bind local:IntuneConnectionPage.BoolToVisibility(HasCertInfo)}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+
+                                                <!-- Row 0: Subject, Issuer -->
+                                                <StackPanel Grid.Column="0" Grid.Row="0" Spacing="2">
+                                                    <TextBlock Text="Subject" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                    <TextBlock Text="{x:Bind CertSubject}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                                               MaxWidth="220" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Grid.Row="0" Spacing="2">
+                                                    <TextBlock Text="Issuer" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                    <TextBlock Text="{x:Bind CertIssuer}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                                               MaxWidth="220" />
+                                                </StackPanel>
+
+                                                <!-- Row 1: Valid From, Thumbprint -->
+                                                <StackPanel Grid.Column="0" Grid.Row="1" Spacing="2">
+                                                    <TextBlock Text="Valid from" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                    <TextBlock Text="{x:Bind ValidFromLabel}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}" />
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Grid.Row="1" Spacing="2">
+                                                    <TextBlock Text="Thumbprint" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                                    <TextBlock Text="{x:Bind ShortThumbprint}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               FontFamily="Cascadia Code, Consolas, monospace" />
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <!-- Uploaded date -->
+                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       Visibility="{x:Bind local:IntuneConnectionPage.StringToVisibility(CreatedLabel)}">
+                                                <Run Text="Uploaded " />
+                                                <Run Text="{x:Bind CreatedLabel}" />
+                                            </TextBlock>
+
+                                            <!-- ID (small) -->
+                                            <TextBlock Text="{x:Bind Id}"
+                                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+
+                                        <!-- Expiry badge (right column) -->
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Top" Spacing="4">
+                                            <!-- Expired badge -->
+                                            <Border Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                                    BorderBrush="{ThemeResource SystemFillColorCriticalBrush}"
+                                                    BorderThickness="1" CornerRadius="4" Padding="8,4"
+                                                    Visibility="{x:Bind local:IntuneConnectionPage.BoolToVisibility(IsExpired)}">
+                                                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                                    <TextBlock Text="EXPIRED" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                               FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{x:Bind ExpiryLabel}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                               HorizontalAlignment="Center" />
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Expiring soon badge -->
+                                            <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                                    BorderBrush="{ThemeResource SystemFillColorCautionBrush}"
+                                                    BorderThickness="1" CornerRadius="4" Padding="8,4"
+                                                    Visibility="{x:Bind local:IntuneConnectionPage.BoolToVisibility(ExpiresSoon)}">
+                                                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                                    <TextBlock Text="EXPIRES SOON" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                                               FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{x:Bind ExpiryLabel}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                                               HorizontalAlignment="Center" />
+                                                </StackPanel>
+                                            </Border>
+                                            <!-- Valid badge -->
+                                            <Border Background="{ThemeResource SystemFillColorSuccessBackgroundBrush}"
+                                                    BorderBrush="{ThemeResource SystemFillColorSuccessBrush}"
+                                                    BorderThickness="1" CornerRadius="4" Padding="8,4"
+                                                    Visibility="{x:Bind local:IntuneConnectionPage.ValidBadgeVisibility(IsExpired, ExpiresSoon, HasCertInfo)}">
+                                                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                                                    <TextBlock Text="VALID" Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                                               FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                                    <TextBlock Text="{x:Bind ExpiryLabel}"
+                                                               Style="{StaticResource CaptionTextBlockStyle}"
+                                                               Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                                               HorizontalAlignment="Center" />
+                                                </StackPanel>
+                                            </Border>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

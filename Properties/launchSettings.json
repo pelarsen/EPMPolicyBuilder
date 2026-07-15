@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EPMPolicyBuilder (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "EPMPolicyBuilder (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
